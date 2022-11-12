@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Envarter /</span>Yeni Güç Ekle</h4>
+<div class="row">
+    <div class="col-md-12">
+      <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+        <li class="nav-item me-2">
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link "  href="{% url 'invertory' %}"><i class="bx bx-add-to-queue me-1"></i> Envarter</a>
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link "  href="{% url 'engine_add' %}"><i class="bx bx-add-to-queue me-1"></i> Yeni Motor</a>
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link "  href="{% url 'pump_add' %}"><i class="bx bx-add-to-queue me-1"></i> Yeni Pompa</a>
+        </li>
+        <li class="nav-item me-2" >
+          <a class="nav-link "  href="{% url 'mark_add' %}"><i class="bx bx-add-to-queue me-1"></i> Yeni Marka</a>
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link active"  href="{% url 'power_add' %}"><i class="bx bx-add-to-queue me-1"></i> Yeni Güç</a>
+        </li>
+    </ul>
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0" {% if form.engine_power.errors %} style="color:#ff3e1d ;" {% endif %}>Yeni Güç Ekle</h5>
+            </div>
+            <div class="card-body">
+              <form id="formAuthentication" action="{% url 'power_add' %}" class="mb-3" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                  {{ form.engine_power }}
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 150px;margin-left: auto;float: right;margin-top: -3px;">Kaydet</button>
+              </form>
+            </div>
+          </div>
+      <div class="card">
+        <div class="table-responsive text-nowrap">
+          <div class="container">
+            <h3>
+                <input type="search" style="width: 300px;margin-left: auto;float: right;margin-top: -3px;" placeholder="Search..." class="form-control search-input" data-table="customers-list" />
+            </h3>
+            <table class="table table-striped mt32 customers-list">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Güç(HP)</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                  {% for item in items %}
+                    <tr>
+                      <td scope="row">{{ forloop.counter }}</td> 
+                      <td>{{item.engine_power}}</td>
+                      <td>
+                        <a type="button" class="btn btn-outline-danger" id="myBtn2" href="{% url 'power_delete' item.id %}">Sil</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+          </div>
+      </div>
+      </div>
+        <script>
+            (function(document) {
+                'use strict';
+    
+                var TableFilter = (function(myArray) {
+                    var search_input;
+    
+                    function _onInputSearch(e) {
+                        search_input = e.target;
+                        var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                        myArray.forEach.call(tables, function(table) {
+                            myArray.forEach.call(table.tBodies, function(tbody) {
+                                myArray.forEach.call(tbody.rows, function(row) {
+                                    var text_content = row.textContent.toLowerCase();
+                                    var search_val = search_input.value.toLowerCase();
+                                    row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                                });
+                            });
+                        });
+                    }
+    
+                    return {
+                        init: function() {
+                            var inputs = document.getElementsByClassName('search-input');
+                            myArray.forEach.call(inputs, function(input) {
+                                input.oninput = _onInputSearch;
+                            });
+                        }
+                    };
+                })(Array.prototype);
+    
+                document.addEventListener('readystatechange', function() {
+                    if (document.readyState === 'complete') {
+                        TableFilter.init();
+                    }
+                });
+    
+            })(document);
+        </script>
+    
+    </div>
+</div>
+{% endblock content%}

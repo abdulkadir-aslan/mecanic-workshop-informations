@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">{{work_name}} /</span> {{work_name}} İş Emri Düzenle</h4>
+<div class="row">
+    <div class="col-md-12">
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">{{work_name}} Emri Düzenle</h5>
+            </div>
+            <div class="card-body">
+              <form id="formAuthentication" class="mb-3" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleDataList" class="form-label">İş Emri</label>
+                        <input type="text" value="E{{items.work_orders_number}}" class="form-control" readonly required>
+                      </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleFormControlSelect1" {% if form2.orders_number.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">{{work_name}} Emri</label>
+                        <input type="text" name="orders_number" value="{% if items.orders_number != None %}{{items.orders_number}} {% endif %}" class="form-control"  required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleDataList" {% if form.invertory.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Kuyu Numarası</label>
+                        <input type="text" value="{{items.work_orders_number.invertory.well_number}}" class="form-control" readonly required>
+                      </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleFormControlSelect1" {% if form.mounting_depth.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Montaj Derinliği</label>
+                        {{form.mounting_depth}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleFormControlSelect1" {% if form.disassembly_depth.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Demontaj Derinliği</label>
+                        {{form.disassembly_depth}}
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleFormControlSelect1" {% if form.tank_info.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Depo Bilgisi</label>
+                        {{form.tank_info}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6"> 
+                        <label for="exampleFormControlSelect1" {% if form.pipe_type.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Boru Tipi</label>
+                        {{form.pipe_type}}
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleFormControlSelect1" {% if form.cable.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Kablo Bilgisi</label>
+                        {{form.cable}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleDataList" {% if form.engine.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Motor Bilgisi</label>
+                        {{form.engine}}
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleDataList" {% if form.pump.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Pompa Bilgisi</label>
+                        {{form.pump}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleFormControlSelect1" {% if form.engine_serial_number.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Motor Seri Numarası</label>
+                        {{form.engine_serial_number}}
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleFormControlSelect1" {% if form.pump_serial_number.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Pompa Seri Numarası</label>
+                        {{form.pump_serial_number}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="exampleFormControlSelect1" {% if form.flow.errors %} style="color:#ff3e1d ;" {% endif %} class="form-label">Debi</label>
+                        {{form.flow}}
+                    </div>
+                    <div class="mb-3 col-md-6" >
+                        <label for="exampleFormControlTextarea1" class="form-label">Açıklama</label>
+                        <input type="text" name="comment" value="{{items.comment}}" class="form-control"  >
+                    </div>
+                </div>
+                {% with  request.resolver_match.url_name as url_name  %}
+                <div class="modal-footer">
+                    {% if url_name == 'updateDisassembly' %} 
+                    <button type="submit" name="close" class="btn btn-danger ">İş Emrini Kapat</button>
+                    <button type="submit" name="close_and_new" class="btn btn-warning">İş Emrini Kapat Yeni İş Emri Aç</button>
+                    <button type="submit" name="workshop" class="btn btn-success ms-auto"  data-bs-dismiss="modal" >Atölyeye Gönder</button>
+                    {% endif %}
+                    {% if url_name == 'updaterepair' %}
+                    {% endif %}
+                    {% if url_name == 'updateworkshop' %}
+                    <button type="submit" name="close"  class="btn btn-danger">İş Emrini Kapat</button>
+                        {% if items.work_orders_number.status == "4" %}
+                        <button type="submit" name="assembly" title="Kaydet Montaja Gönder" class="btn btn-success repair ms-auto"  data-bs-dismiss="modal">Montaja Gönder</button>
+                        {% else %}
+                        <button type="submit" name="repair" title="Kaydet Tamire Gönder" class="btn btn-success repair ms-auto"  data-bs-dismiss="modal">Tamire Gönder</button>
+                        {% endif %}
+                    {% endif %}
+                    {% if url_name == 'updateassembly' %}
+                    <button type="submit" name="newassembly" class="btn btn-danger ">İş Emrini Kapat Yeni İş Emri Aç</button>
+                    <button type="submit" name="assembly" class="btn btn-warning ms-auto"  data-bs-dismiss="modal">İş Emrini Sonlandır</button>
+                    {% endif %}
+                    <button type="submit" name="update" class="btn btn-primary " >Düzenle</button>
+                </div>
+                {% endwith %}
+              </form>
+            </div>
+          </div>
+    </div>
+</div>
+{% endblock content%}

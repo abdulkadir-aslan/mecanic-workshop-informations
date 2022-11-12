@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load tag_library %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Envarter /</span> Envarter Listesi</h4>
+<div class="row">
+  <div class="col-md-12">
+      <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+          <li class="nav-item me-2">
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link active"  href="{% url 'invertory' %}"><i class="bx bx-add-to-queue me-1"></i> Envarter</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link "  href="{% url 'engine_add' %}"><i class="bx bx-add-to-queue me-1"></i> Yeni Motor</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link "  href="{% url 'pump_add' %}"><i class="bx bx-add-to-queue me-1"></i> Yeni Pompa</a>
+          </li>
+          <li class="nav-item me-2" >
+            <a class="nav-link "  href="{% url 'mark_add' %}"><i class="bx bx-add-to-queue me-1"></i> Yeni Marka</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link "  href="{% url 'power_add' %}"><i class="bx bx-add-to-queue me-1"></i> Yeni Güç</a>
+          </li>
+      </ul>
+        <div class="card">
+          <div class="table-responsive text-nowrap">
+            <div class="container">
+              <button type="button" class="btn btn-success mt-3 btn-flat" data-bs-toggle="modal" data-bs-target="#addnew">
+                <i class="bx bx-add-to-queue me-1"></i>
+                Yeni Ekle
+              </button>
+              <h3>
+                  <input type="search" style="width: 300px;margin-left: auto;float: right;margin-top: -3px;" placeholder="Search..." class="form-control search-input" data-table="customers-list" />
+              </h3>
+              <table class="table table-striped mt32 customers-list">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th class="th-sm">Kuyu Numarası</th>
+                      <th>İlçe</th>
+                      <th>Adres</th>
+                      <th>D-Deriniği</th>
+                      <th>M-Derinliği</th>
+                      <th>Depo</th>
+                      <th>Boru Tipi</th>
+                      <th>Kablo</th>
+                      <th>M-Tipi</th>
+                      <th>M-Markası</th>
+                      <th>M-Gücü(HP)</th>
+                      <th>M-Seri No</th>
+                      <th>P-tipi</th>
+                      <th>P-Markası</th>
+                      <th>P-Seri No</th>
+                      <th>Debi</th>
+                      <th>Açıklama</th>
+                      <th>Tarih</th>
+                      <th>ACTIONS</th>
+                    </tr>
+                  </thead>
+                    <tbody class="table-border-bottom-0">
+                      {% for item in inventory %}
+                      <tr>
+                        <td scope="row">{{ forloop.counter }}</td> 
+                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{item.well_number}}</strong></td>
+                        <td ><span style="text-transform:uppercase;">{{item.contry}}</span> </td>
+                        <td>{{item.adress}} </td>
+                        <td>{{item.disassembly_depth}} </td>
+                        <td>{{item.mounting_depth}} </td>
+                        <td>{{item.get_tank_info_display}}</td>
+                        <td>{{item.pipe_type}}</td>
+                        <td>{{item.cable}}</td>
+                        <td>{{item.engine.get_engine_type_display}}</td>
+                        <td>{{item.engine.engine_mark}}</td>
+                        <td>{{item.engine.engine_power}}</td>
+                        <td>{{item.engine_serial_number}}</td>
+                        <td>{{item.pump.pump_type}}-{{item.pump.number_stages}} </td>
+                        <td>{{item.pump.pump_mark}}</td>
+                        <td>{{item.pump_serial_number}}</td>
+                        <td>{{item.flow}}</td>
+                        <td>{{item.comment}}</td>
+                        <td>{{item.create_at}}</td>
+                        <td>
+                          <button title="düzenle" class='btn btn-icon btn-outline-success edit btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-edit'></i> </button>
+                          <button title="sil" class='btn btn-icon btn-outline-danger delete btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-message-square-x'></i> </button>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+              </table>
+            </div>
+        </div>
+        </div>
+  </div>
+</div>
+<!-- modal -->
+<!-- add -->
+<div class="modal fade" id="addnew" >
+  <div class="modal-dialog modal-lg" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">Envarter Ekle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'invertory' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="row">
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.well_number.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.well_number.label_tag}}</label>
+                  {{ form1.well_number}}
+                </div>
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.contry.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.contry.label_tag}}</label>
+                  {{ form1.contry}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.adress.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.adress.label_tag}}</label>
+                  {{ form1.adress}}
+                </div>
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.disassembly_depth.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.disassembly_depth.label_tag}}</label>
+                  {{ form1.disassembly_depth}}
+                </div>
+                
+              </div>
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.mounting_depth.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.mounting_depth.label_tag}}</label>
+                  {{ form1.mounting_depth}}
+                </div>
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.tank_info.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.tank_info.label_tag}}</label>
+                  {{ form1.tank_info}}
+                </div>
+                
+              </div>
+              
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.pipe_type.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.pipe_type.label_tag}}</label>
+                  {{ form1.pipe_type}}
+                </div>
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.cable.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.cable.label_tag}}</label>
+                  {{ form1.cable}}
+                </div>
+                
+              </div>
+              
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.engine.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.engine.label_tag}}</label>
+                  {{ form1.engine}}
+                </div>
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.pump.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.pump.label_tag}}</label>
+                  {{ form1.pump}}
+                </div>
+                
+              </div>
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.engine_serial_number.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.engine_serial_number.label_tag}}</label>
+                  {{ form1.engine_serial_number}}
+                </div>
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.pump_serial_number.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.pump_serial_number.label_tag}}</label>
+                  {{ form1.pump_serial_number}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.flow.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.flow.label_tag}}</label>
+                  {{ form1.flow}}
+                </div>
+                <div class="mb-3 col-md-6">
+                  <span class="text-danger">{{form1.comment.errors}}</span>
+                  <label for="nameWithTitle" class="form-label mt-2">{{form1.comment.label_tag}}</label>
+                  {{ form1.comment}}
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- edit -->
+<div class="modal fade" id="edit" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">Envarter Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'updateİnvertory' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="row">
+              <div class="col mb-3">
+                <input type="hidden" class="id" name="id">
+                <p class="display_form">
+                
+              </p>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-primary">Düzenle</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- delete -->
+<div class="modal fade" id="delete" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">Envarter Sil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'deleteİnvertory' %}">
+          <input type="hidden" class="id" name="id">
+          {% csrf_token %}
+          <div class="text-center">
+            <p>Envarter Sil</p>
+            <h2 class="bold fullname"></h2>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-danger">Sil</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(document) {
+                    'use strict';
+        
+                    var TableFilter = (function(myArray) {
+                        var search_input;
+        
+                        function _onInputSearch(e) {
+                            search_input = e.target;
+                            var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                            myArray.forEach.call(tables, function(table) {
+                                myArray.forEach.call(table.tBodies, function(tbody) {
+                                    myArray.forEach.call(tbody.rows, function(row) {
+                                        var text_content = row.textContent.toLowerCase();
+                                        var search_val = search_input.value.toLowerCase();
+                                        row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                                    });
+                                });
+                            });
+                        }
+        
+                        return {
+                            init: function() {
+                                var inputs = document.getElementsByClassName('search-input');
+                                myArray.forEach.call(inputs, function(input) {
+                                    input.oninput = _onInputSearch;
+                                });
+                            }
+                        };
+                    })(Array.prototype);
+        
+                    document.addEventListener('readystatechange', function() {
+                        if (document.readyState === 'complete') {
+                            TableFilter.init();
+                        }
+                    });
+        
+                })(document);
+  
+  $(function() {
+      $(document).on('click', '.edit', function(e) {
+          e.preventDefault();
+          $('#edit').modal('show');
+          var id = $(this).data('id');
+          getRow(id);
+      });
+
+      $(document).on('click', '.delete', function(e) {
+          e.preventDefault();
+          $('#delete').modal('show');
+          var id = $(this).data('id');
+          getRow(id);
+      });
+
+
+  });
+
+  function getRow(id) {
+      $.ajax({
+          type: 'GET',
+          url: '{% url "invertory_id" %}',
+          data: {
+              id: id
+          },
+          dataType: 'json',
+          success: function(response) {
+            $('.id').val(id),
+              $('.display_form').html(response.form);
+              $('.fullname').html(response.fullname);
+          },
+         
+      });
+  }
+</script>
+
+
+{% endblock content%}

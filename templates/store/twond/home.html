@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">2. El Depo /</span> Stok Listesi</h4>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+            <li class="nav-item me-2">
+              <a class="nav-link active"  href="{% url 'twondstore' %}"><i class="bx bx-add-to-queue me-1"></i> Stok Listesi</a>
+            </li>
+            <li class="nav-item me-2">
+              <a class="nav-link "  href="{% url 'twondEngine' %}"><i class="bx bx-add-to-queue me-1"></i> Motor</a>
+            </li>
+            <li class="nav-item me-2">
+              <a class="nav-link "  href="{% url 'twondPump' %}"><i class="bx bx-add-to-queue me-1"></i>Pompa</a>
+            </li>
+             <!-- jQuery Code (to Show Modal on Page Load) -->
+          </ul>
+          <div class="card">
+            <div class="table-responsive text-nowrap">
+              <div class="container">
+                <h3>
+                    <input type="search" style="width: 300px;margin-left: auto;float: right;margin-top: -3px;" placeholder="Search..." class="form-control search-input" data-table="customers-list" />
+                </h3>
+                <table class="table table-striped mt32 customers-list">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Kategori</th>
+                        <th>Alt Kategori</th>
+                        <th>Miktar</th>
+                        <th>Stok </th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      {% for item in engine %}
+                        <tr>
+                          <td scope="row">{{ forloop.counter }}</td> 
+                          <td>Motor</td>
+                          <td>{{item.engine.get_engine_type_display}} - {{item.engine.engine_power}}HP - {{item.engine.engine_mark}} </td>
+                          <td>{{item.quantity}}</td>
+                          <td>{{item.stock}}</td>
+                        </tr>
+                      {% endfor %}
+                      {% for item in pump %}
+                        <tr>
+                          <td scope="row">{{ engine|length|add:forloop.counter }}</td> 
+                          <td>Pompa</td>
+                          <td>{{item.pump.pump_type}}-{{item.pump.number_stages}} - {{item.pump.get_pump_breed_display}} - {{item.pump.pump_mark}}</td>
+                          <td>{{item.quantity}}</td>
+                          <td>{{item.stock}}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+          </div>
+          </div>
+            <script>
+                (function(document) {
+                    'use strict';
+        
+                    var TableFilter = (function(myArray) {
+                        var search_input;
+        
+                        function _onInputSearch(e) {
+                            search_input = e.target;
+                            var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                            myArray.forEach.call(tables, function(table) {
+                                myArray.forEach.call(table.tBodies, function(tbody) {
+                                    myArray.forEach.call(tbody.rows, function(row) {
+                                        var text_content = row.textContent.toLowerCase();
+                                        var search_val = search_input.value.toLowerCase();
+                                        row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                                    });
+                                });
+                            });
+                        }
+        
+                        return {
+                            init: function() {
+                                var inputs = document.getElementsByClassName('search-input');
+                                myArray.forEach.call(inputs, function(input) {
+                                    input.oninput = _onInputSearch;
+                                });
+                            }
+                        };
+                    })(Array.prototype);
+        
+                    document.addEventListener('readystatechange', function() {
+                        if (document.readyState === 'complete') {
+                            TableFilter.init();
+                        }
+                    });
+        
+                })(document);
+            </script>
+    </div>
+</div>
+
+{% endblock content%}

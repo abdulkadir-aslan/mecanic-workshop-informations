@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sıfır Depo /</span> Motor Listesi</h4>
+<div class="row">
+    <div class="col-md-12">
+      <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+        <li class="nav-item me-2">
+          <a class="nav-link "  href="{% url 'store' %}"><i class="bx bx-add-to-queue me-1"></i> Stok Listesi</a>
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link active"  href="{% url 'zeroEngine' %}"><i class="bx bx-add-to-queue me-1"></i> Motor </a>
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link "  href="{% url 'zeroPump' %}"><i class="bx bx-add-to-queue me-1"></i> Pompa </a>
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link "  href="{% url 'other' %}"><i class="bx bx-add-to-queue me-1"></i>Diğer </a>
+        </li>
+         <!-- jQuery Code (to Show Modal on Page Load) -->
+      </ul>
+          <div class="card">
+            <div class="table-responsive text-nowrap">
+              <div class="container">
+                <button type="button" class="btn btn-success mt-3 btn-flat" data-bs-toggle="modal" data-bs-target="#addnew">
+                  <i class="bx bx-add-to-queue me-1"></i>
+                  Yeni Ekle
+                </button>
+                <h3>
+                    <input type="search" style="width: 300px;margin-left: auto;float: right;margin-top: -3px;" placeholder="Search..." class="form-control search-input" data-table="customers-list" />
+                </h3>
+                <table class="table table-striped mt32 customers-list">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Motor</th>
+                        <th>Seri Numarası</th>
+                        <th>Miktar</th>
+                        <th>Stok </th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      {% for item in engine %}
+                        <tr>
+                          <td scope="row">{{ forloop.counter }}</td> 
+                          <td>{{item.engine.get_engine_type_display}} - {{item.engine.engine_power}}HP - {{item.engine.engine_mark}} </td>
+                          <td>{{ item.engine_serial_number}}</td>
+                          <td>{{item.quantity}}</td>
+                          <td>{{item.stock}}</td>
+                          <td>
+                            <button title="düzenle" class='btn btn-icon btn-outline-success edit btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-edit'></i> </button>
+                            <button title="sil" class='btn btn-icon btn-outline-danger delete btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-message-square-x'></i> </button>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+          </div>
+          </div>
+    </div>
+</div>
+
+<!-- modal -->
+<!-- add -->
+<div class="modal fade" id="addnew" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">2. El Motor Ekle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'zeroEngine' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="row">
+              <div class="col mb-3">
+                {% for field in form1  %}
+                <span class="text-danger">{{field.errors}}</span>
+                <label for="nameWithTitle" class="form-label mt-2">{{field.label_tag}}</label>
+                {{field}}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- edit -->
+<div class="modal fade" id="edit" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">2. El Motor Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'updateZeroEngine' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="row">
+              <div class="col mb-3">
+                <input type="hidden" class="id" name="id">
+                <p class="display_form">
+                
+              </p>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-primary">Düzenle</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- delete -->
+<div class="modal fade" id="delete" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">2. El Motor Sil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'deleteZeroEngine' %}">
+          <input type="hidden" class="id" name="id">
+          {% csrf_token %}
+          <div class="text-center">
+            <p>Motor Sil</p>
+            <h2 class="bold fullname"></h2>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-danger">Sil</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('th').click(function(){
+    var table = $(this).parents('table').eq(0)
+    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+    this.asc = !this.asc
+    if (!this.asc){rows = rows.reverse()}
+    for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+})
+function comparer(index) {
+    return function(a, b) {
+        var valA = getCellValue(a, index), valB = getCellValue(b, index)
+        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+    }
+}
+function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
+
+  (function(document) {
+                    'use strict';
+        
+                    var TableFilter = (function(myArray) {
+                        var search_input;
+        
+                        function _onInputSearch(e) {
+                            search_input = e.target;
+                            var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                            myArray.forEach.call(tables, function(table) {
+                                myArray.forEach.call(table.tBodies, function(tbody) {
+                                    myArray.forEach.call(tbody.rows, function(row) {
+                                        var text_content = row.textContent.toLowerCase();
+                                        var search_val = search_input.value.toLowerCase();
+                                        row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                                    });
+                                });
+                            });
+                        }
+        
+                        return {
+                            init: function() {
+                                var inputs = document.getElementsByClassName('search-input');
+                                myArray.forEach.call(inputs, function(input) {
+                                    input.oninput = _onInputSearch;
+                                });
+                            }
+                        };
+                    })(Array.prototype);
+        
+                    document.addEventListener('readystatechange', function() {
+                        if (document.readyState === 'complete') {
+                            TableFilter.init();
+                        }
+                    });
+        
+                })(document);
+  
+$(function() {
+      $(document).on('click', '.edit', function(e) {
+          e.preventDefault();
+          $('#edit').modal('show');
+          var id = $(this).data('id');
+          getRow(id);
+      });
+
+      $(document).on('click', '.delete', function(e) {
+          e.preventDefault();
+          $('#delete').modal('show');
+          var id = $(this).data('id');
+          getRow(id);
+      });
+
+
+  });
+
+  function getRow(id) {
+      $.ajax({
+          type: 'GET',
+          url: '{% url "zeroEngine_id" %}',
+          data: {
+              id: id
+          },
+          dataType: 'json',
+          success: function(response) {
+            $('.id').val(id),
+              $('.display_form').html(response.form);
+              $('.fullname').html(response.fullname);
+          },
+         
+      });
+  }
+</script>
+
+{% endblock content%}

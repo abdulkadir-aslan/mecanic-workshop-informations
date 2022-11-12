@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Montaj İş Emirleri /</span>Tüm İş Emirleri</h4>
+<div class="row">
+    <div class="col-md-12">
+      <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+        <li class="nav-item me-2">
+          <a class="nav-link " href="{% url 'assembly' %}"><i class="bx bx-add-to-queue me-1"></i> Bekleyen İşler</a>
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link active"  href="{% url 'assemblyAll' %}"><i class="bx bx-add-to-queue me-1"></i> Tüm İş Emirleri</a>
+        </li>
+        </ul>
+          <div class="card">
+            <div class="table-responsive text-nowrap">
+              <div class="container">
+                <h3>
+                    <input type="search" style="width: 300px;margin-left: auto;float: right;margin-top: -3px;" placeholder="Search..." class="form-control search-input" data-table="customers-list" />
+                </h3>
+                <table class="table table-striped mt32 customers-list ">
+                    <thead >
+                      <tr>
+                        <th>#</th>
+                        <th><strong>İş Emri Numarası</strong> </th>
+                        <th><strong>Montaj İş Emri</strong></th>
+                        <th><strong>Kuyu No</strong></th>
+                        <th><strong>İlçe</strong></th>
+                        <th><strong>Adres</strong></th>
+                        <th><strong>Açıklama </strong></th>
+                        <th><strong>Durum</strong></th>
+                        <th><strong>Oluşturma Tarihi</strong></th>
+                        <th><strong>Değiştirme Tarihi</strong></th>
+                        <th><strong>Action</strong></th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      {% for item in items %}
+                        <tr>
+                          <td scope="row">{{ forloop.counter }}</td> 
+                          <td>E{{item.work_orders_number}}</td>
+                          <td>C{{item.orders_number}}</td>
+                          <td>{{item.work_orders_number.invertory.well_number}}</td>
+                          <td>{{item.work_orders_number.invertory.get_contry_display}} </td>
+                          <td>{{item.work_orders_number.invertory.adress}}</td>
+                          <td>{{item.comment}}</td>
+                          <td>
+                            {% if item.work_orders_number.get_status_display == "KAPANDI" %}
+                            <span class="badge bg-label-danger me-1">{{item.work_orders_number.get_status_display}}</span>
+                            {% else %}
+                            <span class="badge bg-label-success me-1">{{item.work_orders_number.get_status_display}}</span>
+                            {% endif %}
+                          </td>
+                          <td>{{item.create_at}}</td>
+                          <td>{{item.update_at}}</td>
+                          <th >
+                            
+                            <a class="btn btn-icon btn-outline-success btn-flat" title="Düzenle" href="{% url 'updateassembly' item.id %}"><i class="tf-icons bx bx-edit"></i></a>
+                            <button class='btn btn-icon btn-outline-danger delete btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-message-square-x'></i> </button>
+                          </th>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+          </div>
+          </div>
+            
+    </div>
+</div>
+
+</div>
+<!-- Delete -->
+<div class="modal fade " id="delete" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Deleting...</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'deleteAssembly' %}">
+          <input type="hidden" class="id" name="id">
+          {% csrf_token %}
+          <div class="text-center">
+              <p>MONTAJ İŞ EMRİ SİL</p>
+              <h2 class="bold fullname"></h2>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-danger" name="delete">Sil</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  (function(document) {
+                    'use strict';
+        
+                    var TableFilter = (function(myArray) {
+                        var search_input;
+        
+                        function _onInputSearch(e) {
+                            search_input = e.target;
+                            var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                            myArray.forEach.call(tables, function(table) {
+                                myArray.forEach.call(table.tBodies, function(tbody) {
+                                    myArray.forEach.call(tbody.rows, function(row) {
+                                        var text_content = row.textContent.toLowerCase();
+                                        var search_val = search_input.value.toLowerCase();
+                                        row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                                    });
+                                });
+                            });
+                        }
+        
+                        return {
+                            init: function() {
+                                var inputs = document.getElementsByClassName('search-input');
+                                myArray.forEach.call(inputs, function(input) {
+                                    input.oninput = _onInputSearch;
+                                });
+                            }
+                        };
+                    })(Array.prototype);
+        
+                    document.addEventListener('readystatechange', function() {
+                        if (document.readyState === 'complete') {
+                            TableFilter.init();
+                        }
+                    });
+        
+                })(document);
+  $(function() {
+      $(document).on('click', '.delete', function(e) {
+          e.preventDefault();
+          $('#delete').modal('show');
+          var id = $(this).data('id');
+          getRow(id);
+      });
+
+
+  });
+
+  function getRow(id) {
+      $.ajax({
+          type: 'GET',
+          url: '{% url "assembly_id" %}',
+          data: {
+              id: id
+          },
+          dataType: 'json',
+          success: function(response) {
+              $('.id').val(id);
+              $('.fullname').html("C"+response.orders_number);
+          }
+      });
+  }
+</script>
+{% endblock content%}

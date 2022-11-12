@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load tag_library %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Demontaj İş Emirleri /</span> Tüm İş Emirleri</h4>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+          <li class="nav-item me-2">
+            <a class="nav-link " href="{% url 'disassembly' %}"><i class="bx bx-add-to-queue me-1"></i> Bekleyen İşler</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link active"  href="{% url 'disassemblyAll' %}"><i class="bx bx-add-to-queue me-1"></i> Tüm İş Emirleri</a>
+          </li>
+          </ul>
+          <div class="card">
+            <div class="table-responsive text-nowrap">
+              <div class="container">
+                <table class="table table-striped mt32 customers-list">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>İş Emri Numarası</th>
+                        <th>Demontaj Numarası</th>
+                        <th>Kuyu No</th>
+                        <th>İlçe</th>
+                        <th>Adres</th>
+                        <th>Açıklama </th>
+                        <th>Durum</th>
+                        <th>Oluşturma Tarihi</th>
+                        <th>Değiştirme Tarihi</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      {% for item in items %}
+                        <tr>
+                          <td scope="row">{{ forloop.counter }}</td> 
+                          <td>E{{item.work_orders_number}}</td>
+                          <td>D{{item.disassembly_orders_number}}</td>
+                          <td>{{item.work_orders_number.invertory.well_number}}</td>
+                          <td>{{item.work_orders_number.invertory.get_contry_display}} </td>
+                          <td>{{item.work_orders_number.invertory.adress}}</td>
+                          <td>{{item.comment}}</td>
+                          <td>
+                            {% if item.work_orders_number.status == "1" %}
+                            <span class="badge bg-label-success me-1">{{item.work_orders_number.get_status_display}}</span>
+                            {% else %}
+                            <span class="badge bg-label-danger me-1">KAPANDI</span>
+                            {% endif %}
+                          </td>
+                          <td>{{item.create_at}}</td>
+                          <td>{{item.update_at}}</td>
+                          <td>
+                            <a class="btn btn-icon btn-outline-success btn-flat" title="Düzenle" href="{% url 'updateDisassembly' item.id %}"><i class="tf-icons bx bx-edit"></i></a>
+                            <button title="sil" class='btn btn-icon btn-outline-danger delete btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-message-square-x'></i> </button>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+          </div>
+          </div>
+    </div>
+</div>
+<!-- modal -->
+
+<!-- delete -->
+<div class="modal fade" id="delete" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">Demontaj İş Emri Sil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'deleteDisassembly' %}">
+          <input type="hidden" class="id" name="id">
+          {% csrf_token %}
+          <div class="text-center">
+            <p>İş Emri Sil</p>
+            <h2 class="bold order7"></h2>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-danger">Sil</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+  $(function() {
+  $(document).on('click', '.edit', function(e) {
+      e.preventDefault();
+      $('#edit').modal('show');
+      var id = $(this).data('id');
+      getRow(id);
+  });
+  
+  $(document).on('click', '.delete', function(e) {
+      e.preventDefault();
+      $('#delete').modal('show');
+      var id = $(this).data('id');
+      getRow(id);
+  });
+  
+  });
+  
+  function getRow(id) {
+        $.ajax({
+            type: 'GET',
+            url: '{% url "disassembly_id" %}',
+            data: {
+                id: id
+            },
+            dataType: 'json',
+            success: function(response) {
+              $('.id').val(id),
+                $('.order1').val(response.order_number);
+                $('.order2').val(response.disassembly_orders_number);
+                $('.order3').val(response.well_number);
+                $('.order4').val(response.contry);
+                $('.order5').val(response.adress);
+                $('.order6').val(response.comment);
+                $('.order7').html("D"+response.disassembly_orders_number);
+            },
+           
+        });
+    }
+  
+  </script>
+{% endblock content%}

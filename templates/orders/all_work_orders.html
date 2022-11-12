@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load tag_library %}
+
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">İş Emirleri /</span> Tüm İş Emirleri</h4>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+          <li class="nav-item me-2">
+            <a class="nav-link " href="{% url 'work_orders' %}"><i class="bx bx-add-to-queue me-1"></i> Bekleyen İşler</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link active"  href="{% url 'all_work_orders' %}"><i class="bx bx-add-to-queue me-1"></i> Tüm İş Emirleri</a>
+          </li>
+          </ul>
+          <div class="card">
+            <div class="table-responsive text-nowrap">
+              <div class="container">
+                <table class="table table-striped mt32 customers-list">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>İş Emri Numarası</th>
+                      <th>Kuyu No</th>
+                      <th>İlçe</th>
+                      <th>Adres</th>
+                      <th>Açıklama </th>
+                      <th>Durum</th>
+                      <th>Oluşturma Tarihi</th>
+                      <th>Değiştirme Tarihi</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-border-bottom-0">
+                    {% for item in items %}
+                      <tr>
+                        <td scope="row">{{ forloop.counter }}</td> 
+                        <td>
+                          <a href="" class="text-primary copy " data-id='{{ item.id }}' title="düzenle">E{{item.work_orders_number}}</a>
+                        </td>
+                        <td>{{item.invertory.well_number}}</td>
+                        <td>{{item.invertory.get_contry_display}} </td>
+                        <td>{{item.invertory.adress}}</td>
+                        <td>{{item.comment}}</td>
+                        <td>
+                          {% if item.get_status_display == "KAPANDI" %}
+                          <span class="badge bg-label-danger me-1">{{item.get_status_display}}</span>
+                          {% else %}
+                          <span class="badge bg-label-success me-1">{{item.get_status_display}}</span>
+                          {% endif %}
+                        </td>
+                        <td>{{item.create_at}}</td>
+                        <td>{{item.update_at}}</td>
+                        <td>
+                          <div class="btn-group">
+                            <button type="button" title="İş Akışı" class="btn btn-icon btn-outline-info " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="tf-icons bx bx-layer"></span>
+                            </button>
+                            <div class="dropdown-menu" style="">
+                              <div class="px-3 py-2 text-muted">
+                                {% for itemss in item.job_done|job_done %}
+                                  <ul>
+                                    <li>{{ itemss }}</li>
+                                  </ul>
+                                {% endfor %}
+                              </div>
+                            </div>
+                          </div>
+                          <button title="düzenle" class='btn btn-icon btn-outline-success edit btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-edit'></i> </button>
+                          <button title="sil" class='btn btn-icon btn-outline-danger delete btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-message-square-x'></i> </button>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+              </table>
+              </div>
+          </div>
+          </div>
+    </div>
+</div>
+
+{% endblock content%}

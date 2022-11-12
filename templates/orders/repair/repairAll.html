@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tamir İş Emirleri /</span> Bekleyen İş Emirleri</h4>
+<div class="row">
+    <div class="col-md-12">
+      <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+        <li class="nav-item me-2">
+          <a class="nav-link " href="{% url 'repair' %}"><i class="bx bx-add-to-queue me-1"></i> Bekleyen İşler</a>
+        </li>
+        <li class="nav-item me-2">
+          <a class="nav-link active"  href="{% url 'repairAll' %}"><i class="bx bx-add-to-queue me-1"></i> Tüm İş Emirleri</a>
+        </li>
+        </ul>
+          <div class="card">
+            <div class="table-responsive text-nowrap">
+              <div class="container">
+                <h3>
+                    <input type="search" style="width: 300px;margin-left: auto;float: right;margin-top: -3px;" placeholder="Search..." class="form-control search-input" data-table="customers-list" />
+                </h3>
+                <table class="table table-striped mt32 customers-list">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>İş Emri Numarası</th>
+                        <th>Tamir İş Emri</th>
+                        <th>Kuyu No</th>
+                        <th>İlçe</th>
+                        <th>Adres</th>
+                        <th>Açıklama </th>
+                        <th>Durum</th>
+                        <th>Oluşturma Tarihi</th>
+                        <th>Değiştirme Tarihi</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      {% for item in items %}
+                        <tr>
+                          <td scope="row">{{ forloop.counter }}</td> 
+                          <td>E{{item.work_orders_number}}</td>
+                          <td>TG{{item.repair_orders_number}}</td>
+                          <td>{{item.work_orders_number.invertory.well_number}}</td>
+                          <td>{{item.work_orders_number.invertory.get_contry_display}} </td>
+                          <td>{{item.work_orders_number.invertory.adress}}</td>
+                           <td>{{item.comment}}</td>
+                          <td>
+                            {% if item.work_orders_number.status == "3" %}
+                            <span class="badge bg-label-success me-1">{{item.work_orders_number.get_status_display}}</span>
+                            {% else %}
+                            <span class="badge bg-label-danger me-1">KAPANDI</span>
+                            {% endif %}
+                          </td>
+                          <td>{{item.create_at}}</td>
+                          <td>{{item.update_at}}</td>
+                          <th>
+                            {% if item.work_orders_number.status != "3" %}
+                            <a type="button" href="/" title="yazdır" class="btn btn-icon btn-outline-primary">
+                                <span class="tf-icons bx bx-printer"></span>
+                            </a>
+                            {% endif %}
+                            <button title="düzenle" class='btn btn-icon btn-outline-success edit btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-edit'></i> </button>
+                            <button title="sil" class='btn btn-icon btn-outline-danger delete btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-message-square-x'></i> </button>
+                          </th>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+          </div>
+          </div>
+    </div>
+</div>
+<!-- modal -->
+<!-- edit -->
+<div class="modal fade" id="edit" >
+  <div class="modal-dialog modal-lg" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">İş Emri Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'updaterepair' %}">
+          {% csrf_token %}
+          <input type="hidden" class="id" name="id">
+          <input type="hidden" class="engine" name="engine">
+          <input type="hidden" class="engine_serial_number" name="engine_serial_number">
+            <table class="table table-borderless table-xs content-group-sm" >
+              <thead>
+                <tr>
+                  <th colspan="3" style="background-color:ghostwhite"> 
+                    <dt>
+                      <p class="text-left "><span> Başvuru Bilgileri </span></p> 
+                    </dt>
+                  </th>
+                  <th colspan="2" style="background-color:ghostwhite"> 
+                    <dt>
+                      <p class="text-left ">İş Emri : <strong class="value0"></strong></p>
+                    </dt>  
+                  </th>
+                  <th colspan="2" style="background-color:ghostwhite"> 
+                    <dt>
+                    <p class="text-right ">Tamir No : AG<strong class="value16"></strong></p>
+                  </dt>  
+                  </th>       
+                </tr>   
+              </thead>   
+              <tbody>      
+                <tr>         
+                  <td ><dt>Kuyu No</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value1"></td>
+                  <td ><dt>Adres</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value3"></td>      
+                </tr>      
+                <tr>         
+                  <td ><dt>İlçe</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value2"></td>         
+                  <td ><dt>Kayıt Tarihi</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value11"></td>      
+                </tr>      
+                <tr>         
+                  <td ><dt>D Derinliği</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value4"></td>         
+                  <td ><dt>M Derinliği</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value5"></td>      
+                </tr>      
+                <tr>         
+                  <td ><dt>Depo Bil.</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value6"></td>         
+                  <td ><dt>Boru Tipi</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value7"></td>       
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                  <td ><dt>Kablo</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value8"></td>         
+                  <td >
+                    <dt>  Motor</dt>
+                  </td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value9">
+                  </td>       
+                </tr>      
+                <tr>         
+                  <td ><dt>Pompa</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value10"></td>
+                  <td  ><dt>M Seri No</dt></td>         
+                  <td  ><dt>:</dt></td>         
+                  <td  class="value12">
+                  </td>       
+                </tr>      
+                <tr>         
+                  <td ><dt>P Seri No</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td  class="value13"></td>
+                  <td ><dt>Debi</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td  class="value14"></td>       
+                </tr>      
+                <tr>
+                  <td ><dt>Açıklama</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td colspan="3"><textarea class="form-control value15" name="comment" rows="1"></textarea>
+                  </td>       
+                </tr>   
+              </tbody>
+            </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary ms-auto"  data-bs-dismiss="modal">Kapat</button>
+        <button type="submit" name="save" class="btn btn-primary">Kaydet Atölyeye Gönder</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- delete -->
+<div class="modal fade" id="delete" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">Demontaj İş Emri Sil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'deleteDisassembly' %}">
+          <input type="hidden" class="id" name="id">
+          {% csrf_token %}
+          <div class="text-center">
+            <p>İş Emri Sil</p>
+            <h2 class="bold order17"></h2>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-danger">Sil</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+$('th').click(function(){
+var table = $(this).parents('table').eq(0)
+var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+this.asc = !this.asc
+if (!this.asc){rows = rows.reverse()}
+for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+})
+function comparer(index) {
+return function(a, b) {
+var valA = getCellValue(a, index), valB = getCellValue(b, index)
+return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+}
+}
+function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
+
+(function(document) {
+        'use strict';
+
+        var TableFilter = (function(myArray) {
+            var search_input;
+
+            function _onInputSearch(e) {
+                search_input = e.target;
+                var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                myArray.forEach.call(tables, function(table) {
+                    myArray.forEach.call(table.tBodies, function(tbody) {
+                        myArray.forEach.call(tbody.rows, function(row) {
+                            var text_content = row.textContent.toLowerCase();
+                            var search_val = search_input.value.toLowerCase();
+                            row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                        });
+                    });
+                });
+            }
+
+            return {
+                init: function() {
+                    var inputs = document.getElementsByClassName('search-input');
+                    myArray.forEach.call(inputs, function(input) {
+                        input.oninput = _onInputSearch;
+                    });
+                }
+            };
+        })(Array.prototype);
+
+        document.addEventListener('readystatechange', function() {
+            if (document.readyState === 'complete') {
+                TableFilter.init();
+            }
+        });
+
+    })(document);
+
+$(function() {
+
+
+$(document).on('click', '.edit', function(e) {
+    e.preventDefault();
+    $('#edit').modal('show');
+    var id = $(this).data('id');
+    getRow(id);
+});
+
+
+$(document).on('click', '#engine', function(e) {
+    e.preventDefault(); 
+    var doc = document.getElementById("engine_id");
+      $('.value9').html(doc.options[doc.selectedIndex].textContent);
+      $('.value12').html($("#serialnumber").val());
+      $('.engine_serial_number').val($("#serialnumber").val());
+      $('.engine').val($("#engine_id").val());
+});
+
+$(document).on('click', '.delete', function(e) {
+    e.preventDefault();
+    $('#delete').modal('show');
+    var id = $(this).data('id');
+    getRow(id);
+});
+
+});
+
+function getRow(id) {
+      $.ajax({
+          type: 'GET',
+          url: '{% url "repair_id" %}',
+          data: {
+              id: id
+          },
+          dataType: 'json',
+          success: function(response) {
+            $('.id').val(id),
+            $('.value0').html(response.order_number);
+            $('.value1').html(response.well_number);
+            $('.value2').html(response.contry);
+            $('.value3').html(response.adress);
+            $('.value4').html(response.disassembly_depth);
+            $('.value5').html(response.mounting_depth);
+            $('.value6').html(response.tank_info);
+            $('.value7').html(response.pipe_type);
+            $('.value8').html(response.cable);
+            $('.value9').html(response.engine);
+            $('.value10').html(response.pump);
+            $('.value11').html(response.create_at);
+            $('.value12').html(response.engine_serial_number);
+            $('.value13').html(response.pump_serial_number);
+            $('.value14').html(response.flow);
+            $('.value15').val(response.comment);
+            $('.value16').html(response.repair_orders_number);
+            $('.engine_serial_number').val(response.engine_serial_number);
+            $('.engine').val(response.engine_id);
+            $('.order17').html("AG"+response.repair_orders_number);
+          },
+         
+      });
+  }
+
+</script>
+
+{% endblock content%}

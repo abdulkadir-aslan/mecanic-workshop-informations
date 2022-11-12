@@ -1,0 +1,279 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<!-- beautify ignore:start -->
+<html
+  lang="en"
+  class="light-style layout-menu-fixed"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+     
+    <title>Şuski Genel Müdürlüğü | Destek Hizmetleri Daire Başkanlığı | Makina İkmal </title>
+
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static './assets/img/favicon/favicon.ico' %}" />
+
+    
+
+    <!-- Icons. Uncomment required icon fonts -->
+    <link rel="stylesheet" href="{% static './assets/vendor/fonts/boxicons.css' %}" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static './assets/vendor/css/core.css' %}" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="{% static './assets/vendor/css/theme-default.css' %}" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{% static './assets/css/demo.css' %}" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{% static './assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css' %}" />
+
+    <link rel="stylesheet" href="{% static './assets/vendor/libs/apex-charts/apex-charts.css' %}" />
+
+    <!-- Page CSS -->
+    <script src="{% static './assets/vendor/js/Chart.min.js' %}"></script>
+    <!-- Helpers -->
+    <script src="{% static './assets/vendor/js/helpers.js' %}"></script>
+     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="{% static './assets/js/config.js' %}"></script>
+  
+    <link rel="stylesheet" href="{% static './assets/vendor/datatables/css/datatables.min.css' %}">
+  
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+
+  </head>
+
+  <body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="/" ><img style="margin-left: 0;" src="{% static './assets/img/elements/logo.png' %}" class="bg-black no-margin" alt="">
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+          {% with  request.resolver_match.url_name as url_name  %}
+          <ul class="menu-inner py-1 ps ps--active-y">
+            <!-- Dashboard -->
+            <li class="menu-item {% if url_name == 'home' %}active {% endif %}">
+              <a href="/" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div data-i18n="Analytics">Anasayfa</div>
+              </a>
+            </li>
+            <li class="menu-header small text-uppercase ">
+              <span class="menu-header-text">Kulanıcı İşlemleri</span>
+            </li>
+            <li class="menu-item {% if url_name == 'register' %}active {% endif %}">
+              <a href="{% url 'register' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Yeni Kullanıcı</div>
+              </a>
+            </li>
+            <li class="menu-item {% if url_name == 'users_home' %}active {% endif %}">
+              <a href="{% url 'users_home' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Tüm Kullanıcılar</div>
+              </a>
+            </li>
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Envarter İşlemleri</span></li>
+            <li class="menu-item {% if url_name in 'invertory' %}active {% endif %}">
+              <a href="{% url 'invertory' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Envarter</div>
+              </a>
+            </li>
+            <li class="menu-item {% if url_name == 'store' or url_name == 'twondstore' or url_name == 'repairstore' %}active open {% endif %}" style="">
+              <a href="javascript:void(0);"  class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-cube-alt"></i>
+                <div data-i18n="Misc">Depolar</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item {% if url_name == 'store' %}active  {% endif %}">
+                  <a href="{% url 'store' %}" class="menu-link">
+                    <div data-i18n="Error">Sıfır </div>
+                  </a>
+                </li>
+                <li class="menu-item {% if url_name == 'twondstore' %}active  {% endif %}">
+                  <a href="{% url 'twondstore' %}" class="menu-link">
+                    <div data-i18n="Under Maintenance">2. El </div>
+                  </a>
+                </li>
+                <li class="menu-item {% if url_name == 'repairstore' %}active  {% endif %}">
+                  <a href="{% url 'repairstore' %}" class="menu-link">
+                    <div data-i18n="reverse">Tamir</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">İş Emirleri</span></li>
+            <li class="menu-item {% if url_name == 'work_orders' or url_name == 'all_work_orders' %}active {% endif %}">
+              <a href="{% url 'work_orders' %}"  class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Documentation">İş Emri</div>
+              </a>
+            </li>
+            <li class="menu-item {% if url_name == 'disassembly' or url_name == 'disassemblyAll' or url_name == 'updateDisassembly' %}active {% endif %}">
+              <a href="{% url 'disassembly' %}"  class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Documentation">Demontaj</div>
+              </a>
+            </li>
+            <li class="menu-item {% if url_name == 'workshop' or url_name == 'workshopyAll' or url_name == 'updateworkshop' %}active {% endif %}">
+              <a href="{% url 'workshop' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Documentation">Atölye</div>
+              </a>
+            </li>
+            <li class="menu-item {% if url_name == 'repair' or url_name == 'repairAll' or url_name == 'updaterepair' %}active {% endif %}">
+              <a href="{% url 'repair' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Documentation">Tamirde</div>
+              </a>
+            </li>
+            <li class="menu-item {% if url_name == 'repair_come' %}active {% endif %}">
+              <a href="{% url 'repair_come' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Documentation">Tamirden Geldi</div>
+              </a>
+            </li>
+            <li class="menu-item {% if url_name == 'assembly' or url_name == 'assemblyAll' or url_name == 'updateassembly' %}active {% endif %}">
+              <a href="{% url 'assembly' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Documentation">Montaj</div>
+              </a>
+            </li>
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Raporlar</span></li>
+            <li class="menu-item " style="">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-detail"></i>
+                <div data-i18n="Form Elements">Raporlar</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="/" class="menu-link">
+                    <div data-i18n="Basic Inputs">Montaj Genel Raporlama</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/" class="menu-link">
+                    <div data-i18n="Input groups">Demontaj Genel Raporlama</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          {% endwith %}
+        </aside>
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+         <!-- Navbar -->
+
+         <nav
+           class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+           id="layout-navbar"
+         >
+           <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+             <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+               <i class="bx bx-menu bx-sm"></i>
+             </a>
+           </div>
+
+           <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+             <!-- Search -->
+             <div class="navbar-nav align-items-center">
+               <div class="nav-item d-flex align-items-center">
+                 <i class="bx bx-search fs-4 lh-0"></i>
+                 <input
+                   type="text"
+                   class="form-control border-0 shadow-none"
+                   placeholder="Search..."
+                   aria-label="Search..."
+                 />
+               </div>
+             </div>
+             <!-- /Search -->
+
+             <ul class="navbar-nav flex-row align-items-center ms-auto">
+               
+               <!-- User -->
+               <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                   <div class="avatar avatar-online">
+                     <img src="{% static './assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                   </div>
+                 </a>
+                 <ul class="dropdown-menu dropdown-menu-end " data-bs-popper="none">
+                   <li>
+                     <a class="dropdown-item" href="#">
+                       <div class="d-flex">
+                         <div class="flex-shrink-0 me-3">
+                           <div class="avatar avatar-online">
+                             <img src="{% static './assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                           </div>
+                         </div>
+                         <div class="flex-grow-1">
+                           <span class="fw-semibold d-block">{{ request.user.get_full_name }}</span>
+                           <small class="text-muted">{{ request.user.get_authorization_display }}</small>
+                         </div>
+                       </div>
+                     </a>
+                   </li>
+                   <li>
+                     <div class="dropdown-divider"></div>
+                   </li>
+                   <li>
+                     <a class="dropdown-item" href="{% url 'register_edit' request.user.id %}">
+                       <i class="bx bx-user me-2"></i>
+                       <span class="align-middle">Profilim</span>
+                     </a>
+                   </li>
+                   <!-- <li>
+                     <a class="dropdown-item" href="#">
+                       <i class="bx bx-cog me-2"></i>
+                       <span class="align-middle">Settings</span>
+                     </a>
+                   </li> -->
+                   <li>
+                     <a class="dropdown-item" href="#">
+                       <span class="d-flex align-items-center align-middle">
+                         <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
+                         <span class="flex-grow-1 align-middle">Bildirimler</span>
+                         <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">0</span>
+                       </span>
+                     </a>
+                   </li>
+                   <li>
+                     <div class="dropdown-divider"></div>
+                   </li>
+                   <li>
+                     <a class="dropdown-item" href="{% url 'logout' %}" >
+                       <i class="bx bx-power-off me-2"></i>
+                       <span class="align-middle">Oturumu Kapat</span>
+                     </a>
+                   </li>
+                 </ul>
+               </li>
+               <!--/ User -->
+             </ul>
+           </div>
+         </nav>
+
+         <!-- / Navbar -->

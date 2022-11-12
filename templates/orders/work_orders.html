@@ -1,0 +1,443 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load tag_library %}
+
+{% block content%}
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">İş Emirleri /</span> Bekleyen İş Emirleri</h4>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-pills flex-column flex-md-row mb-4 ">
+          <li class="nav-item me-2">
+            <a class="nav-link active" href="{% url 'work_orders' %}"><i class="bx bx-add-to-queue me-1"></i> Bekleyen İşler</a>
+          </li>
+          <li class="nav-item me-2">
+            <a class="nav-link "  href="{% url 'all_work_orders' %}"><i class="bx bx-add-to-queue me-1"></i> Tüm İş Emirleri</a>
+          </li>
+          </ul>
+                <div class="card mb-4">
+                  <h5 class="card-header">Yeni iş Emri Oluştur</h5>
+                  <div class="card-body">
+                    <div class="row gx-3 gy-2 align-items-center">
+                        <div class="col-md-3 ">
+                          <label for="defaultFormControlInput" class="form-label">Kuyu Numarası</label>
+                          <input type="number" id="kuyu_numarasi" class="form-control" name="kuyu_numarası" placeholder="kuyu numarası "  autofocus="" required>
+                        </div>
+                        <div class="col-md-3">
+                        <label class="form-label" for="showToastPlacement">&nbsp;</label>
+                        <button id="add" class="btn btn-primary d-block">Oluştur</button>
+                        </div>
+                    </div>
+                    <div id="defaultFormControlHelp" class="form-text">
+                      İş Emri oluşturmak istediğiniz tesis için KUYU numarasını giriniz.
+                    </div>
+                    </div>
+                </div>
+          <div class="card">
+            <div class="table-responsive ">
+              <div class="container">
+                <h3>
+                    <input type="search" style="width: 300px;margin-left: auto;float: right;margin-top: -3px;" placeholder="Search..." class="form-control search-input" data-table="customers-list" />
+                </h3>
+                <table class="table table-striped ">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">İş Emri Numarası</th>
+                        <th scope="col">Kuyu No</th>
+                        <th scope="col">İlçe</th>
+                        <th scope="col">Adres</th>
+                        <th scope="col">Açıklama </th>
+                        <th scope="col">Durum</th>
+                        <th scope="col">Oluşturma Tarihi</th>
+                        <th scope="col">Değiştirme Tarihi</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      {% for item in items %}
+                        <tr>
+                          <th scope="row">{{ forloop.counter }}</th> 
+                          <td>
+                            <a href="" class="text-primary copy " data-id='{{ item.id }}' title="düzenle">E{{item.work_orders_number}}</a>
+                          </td>
+                          <td>{{item.invertory.well_number}}</td>
+                          <td>{{item.invertory.get_contry_display}} </td>
+                          <td>{{item.invertory.adress}}</td>
+                          <td>{{item.comment}}</td>
+                          <td>
+                            {% if item.get_status_display == "KAPANDI" %}
+                            <span class="badge bg-label-danger me-1">{{item.get_status_display}}</span>
+                            {% else %}
+                            <span class="badge bg-label-success me-1">{{item.get_status_display}}</span>
+                            {% endif %}
+                          </td>
+                          <td>{{item.create_at}}</td>
+                          <td>{{item.update_at}}</td>
+                          <td class="text-nowrap">
+                            <div class="btn-group">
+                              <button type="button" title="İş Akışı" class="btn btn-icon btn-outline-info " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="tf-icons bx bx-layer"></span>
+                              </button>
+                              <div class="dropdown-menu" style="">
+                                <div class="px-3 py-2 text-muted">
+                                  {% for itemss in item.job_done|job_done %}
+                                    <ul>
+                                      <li>{{ itemss }}</li>
+                                    </ul>
+                                  {% endfor %}
+                                </div>
+                              </div>
+                            </div>
+                            <button title="düzenle" class='btn btn-icon btn-outline-success edit btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-edit'></i> </button>
+                            <button title="sil" class='btn btn-icon btn-outline-danger delete btn-flat' data-id='{{ item.id }}'><i class='tf-icons bx bx-message-square-x'></i> </button>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+          </div>
+          </div>
+    </div>
+</div>
+<!-- modal -->
+
+<!-- edit -->
+<div class="modal fade" id="edit" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">İş Emri Düzenle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'updateWork_orders' %}">
+          {% csrf_token %}
+          <input type="hidden" class="id" name="id">
+          <div class="modal-body">
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                  <label for="exampleDataList">İş Emri</label>
+                  <input type="text"  class="form-control order1 " readonly required>
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="exampleDataList">Kuyu Numarası</label>
+                  <input type="text"  class="form-control order2 " readonly required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                  <label for="exampleDataList">İlçe</label>
+                  <input type="text"  class="form-control order3 " readonly required>
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="exampleDataList">Adres</label>
+                  <input type="text"  class="form-control order4" readonly required>
+                </div>
+            </div>
+            <div>
+              <label for="exampleFormControlTextarea1" class="form-label">Açıklama</label>
+              <textarea class="form-control order5" name="comment" rows="2"></textarea>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" name="close"  class="btn btn-danger">İş Emrini Kapat</button>
+        <button type="button" class="btn btn-outline-secondary ms-auto"  data-bs-dismiss="modal">Kapat</button>
+        <button type="submit" name="save" class="btn btn-primary">Düzenle</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- delete -->
+<div class="modal fade" id="delete" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">İş Emri Sil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" method="POST" action="{% url 'deleteWork_orders' %}">
+          <input type="hidden" class="id" name="id">
+          {% csrf_token %}
+          <div class="text-center">
+            <p>İş Emri Sil</p>
+            <h2 class="bold order7"></h2>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Kapat
+        </button>
+        <button type="submit" class="btn btn-danger">Sil</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- copy -->
+<div class="modal fade " id="copy">
+  <div class="modal-dialog modal-sm" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <h6 class=" order6"></h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- add -->
+<div class="modal fade" id="addet">
+  <div class="modal-dialog modal-lg" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">İş Emri Oluştur</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <div class="modal-body">
+            <table class="table table-borderless table-xs content-group-sm">
+              <thead>
+                <tr>
+                  <th colspan="5" style="background-color:ghostwhite"> 
+                  <dt>
+                    <p class="text-left "><span> Başvuru Bilgileri </span></p> 
+                  </dt>
+                  </th>
+                  <th colspan="5" style="background-color:ghostwhite"> 
+                    <dt>
+                    <p class="text-right ">No : E<strong class="value0"></strong></p>
+                  </dt>  
+                  </th>       
+                </tr>   
+              </thead>   
+              <tbody>      
+                <tr>         
+                  <td ><dt>Kuyu No</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value1"></td>
+                  <td ><dt>Adres</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value3"></td>      
+                </tr>      
+                <tr>         
+                  <td ><dt>İlçe</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value2"></td>         
+                  <td ><dt>Kayıt Tarihi</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value11"></td>      
+                </tr>      
+                <tr>         
+                  <td ><dt>D Derinliği</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value4"></td>         
+                  <td ><dt>M Derinliği</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value5"></td>      
+                </tr>      
+                <tr>         
+                  <td ><dt>Depo Bil.</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value6"></td>         
+                  <td ><dt>Boru Tipi</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value7"></td>       
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                  <td ><dt>Kablo</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value8"></td>         
+                  <td ><dt>Motor</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value9"></td>       
+                </tr>      
+                <tr>         
+                  <td ><dt>Pompa</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td class="value10"></td>
+                  <td  ><dt>M Seri No</dt></td>         
+                  <td  ><dt>:</dt></td>         
+                  <td  class="value12"></td>       
+                </tr>      
+                <tr>         
+                  <td ><dt>P Seri No</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td  class="value13"></td>
+                  <td ><dt>Debi</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td  class="value14"></td>       
+                </tr>      
+                <tr>
+                  <td ><dt>Açıklama</dt></td>         
+                  <td ><dt>:</dt></td>         
+                  <td colspan="4" class="value15"></td>       
+                </tr>   
+              </tbody>
+            </table>
+          </div>
+      </div>
+      <form class="form-horizontal" method="POST" action="{% url 'work_orders' %}">
+        {% csrf_token %}
+        <div class="modal-footer ">
+          <input type="hidden" class="invertoryid" name="invertoryid">
+          <button type="submit" name="assembly"  title="Kaydet Boy Ekleme Talimatı Ver" class="btn btn-success  ">K.B.E.T</button>
+          <button type="submit" name="disassembly" title="Kaydet Yerinde Demontaj Montaj Talimatı Ver" class="btn btn-warning">K.Y.D.M.T</button>
+          <button type="button" class="btn btn-outline-secondary ms-auto" data-bs-dismiss="modal">Kapat</button>
+          <button type="submit" name="save" title="Kaydet Demontaj Talimatı Ver" class="btn btn-primary">Kaydet D.T</button>
+        </div>
+      </form>
+      </div>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+  $("#add").click(function(){
+    $.ajax({
+      url : '{% url "workOrdersİnv" %}',
+      type: 'GET',
+      data: {
+        'kuyu_numarasi': $("#kuyu_numarasi").val(),
+          },
+      success:function(response){
+        console.log(response);
+        if (response.code == '404'){
+          $('#kuyu_numarasi').val('');
+          location.reload();
+        }
+        else{
+          $('.invertoryid').val(response.id),
+            $('#addet').modal('show');
+            $('.value0').html(response.order_number);
+            $('.value1').html(response.well_number);
+            $('.value2').html(response.contry);
+            $('.value3').html(response.adress);
+            $('.value4').html(response.disassembly_depth);
+            $('.value5').html(response.mounting_depth);
+            $('.value6').html(response.tank_info);
+            $('.value7').html(response.pipe_type);
+            $('.value8').html(response.cable);
+            $('.value9').html(response.engine);
+            $('.value10').html(response.pump);
+            $('.value11').html(response.create_at);
+            $('.value12').html(response.engine_serial_number);
+            $('.value13').html(response.pump_serial_number);
+            $('.value14').html(response.flow);
+            $('.value15').html(response.comment);
+          
+        }
+      }
+    })
+  })
+});
+
+$('th').click(function(){
+var table = $(this).parents('table').eq(0)
+var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+this.asc = !this.asc
+if (!this.asc){rows = rows.reverse()}
+for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+})
+function comparer(index) {
+return function(a, b) {
+var valA = getCellValue(a, index), valB = getCellValue(b, index)
+return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+}
+}
+function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
+
+(function(document) {
+        'use strict';
+
+        var TableFilter = (function(myArray) {
+            var search_input;
+
+            function _onInputSearch(e) {
+                search_input = e.target;
+                var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                myArray.forEach.call(tables, function(table) {
+                    myArray.forEach.call(table.tBodies, function(tbody) {
+                        myArray.forEach.call(tbody.rows, function(row) {
+                            var text_content = row.textContent.toLowerCase();
+                            var search_val = search_input.value.toLowerCase();
+                            row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                        });
+                    });
+                });
+            }
+
+            return {
+                init: function() {
+                    var inputs = document.getElementsByClassName('search-input');
+                    myArray.forEach.call(inputs, function(input) {
+                        input.oninput = _onInputSearch;
+                    });
+                }
+            };
+        })(Array.prototype);
+
+        document.addEventListener('readystatechange', function() {
+            if (document.readyState === 'complete') {
+                TableFilter.init();
+            }
+        });
+
+    })(document);
+
+$(function() {
+$(document).on('click', '.edit', function(e) {
+    e.preventDefault();
+    $('#edit').modal('show');
+    var id = $(this).data('id');
+    getRow(id);
+});
+
+$(document).on('click', '.delete', function(e) {
+    e.preventDefault();
+    $('#delete').modal('show');
+    var id = $(this).data('id');
+    getRow(id);
+});
+
+$(document).on('click', '.copy', function(e) {
+    e.preventDefault();
+    $('#copy').modal('show');
+    var id = $(this).data('id');
+    getRow(id);
+});
+
+});
+
+function getRow(id) {
+      $.ajax({
+          type: 'GET',
+          url: '{% url "work_orders_id" %}',
+          data: {
+              id: id
+          },
+          dataType: 'json',
+          success: function(response) {
+            $('.id').val(id),
+              $('.order1').val(response.order_number);
+              $('.order2').val(response.well_number);
+              $('.order3').val(response.contry);
+              $('.order4').val(response.adress);
+              $('.order5').val(response.comment);
+              $('.order6').html(response.fullname);
+              $('.order7').html(response.order_number);
+          },
+         
+      });
+  }
+
+</script>
+{% endblock content%}

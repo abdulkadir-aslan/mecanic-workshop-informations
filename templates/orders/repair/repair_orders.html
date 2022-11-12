@@ -1,0 +1,121 @@
+{% extends 'account/base/user.html' %}
+{% load static %}
+
+{% block user %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="layout-demo-wrapper">
+        <div class="layout-demo-placeholder">
+            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">İş Emirleri /</span> Tamire Gelen Dalgıçlar</h4>
+            <div class="row">
+                <!-- Basic -->
+                <div class="col-md-12">
+                  <ul class="nav nav-pills flex-column flex-md-row mb-3">
+                      <li class="nav-item">
+                        <a class="nav-link active" href="javascript:void(0);"><i class="bx bx-trending-down me-1"></i> Bekleyen İşler</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="pages-account-settings-notifications.html"><i class="bx bx-trending-up me-1"></i> Tüm İşler</a>
+                      </li>
+                    </ul>
+                    <div class="card">
+                      <div class="table-responsive text-nowrap">
+                        <div class="container">
+                          <h3>
+                              <input type="search" style="width: 300px;margin-left: auto;float: right;margin-top: -3px;" placeholder="Search..." class="form-control search-input" data-table="customers-list" />
+                          </h3>
+                          <table class="table table-striped mt32 customers-list">
+                              <thead>
+                                <tr>
+                                  <th>#</th>
+                                  <th>İş Emri Numarası</th>
+                                  <th>Tamir İş Emri</th>
+                                  <th>Kuyu No</th>
+                                  <th>İlçe</th>
+                                  <th>Adres</th>
+                                  <th>Açıklama </th>
+                                  <th>Durum</th>
+                                  <th>Oluşturma Tarihi</th>
+                                  <th>Değiştirme Tarihi</th>
+                                  <th>Action</th>
+                                </tr>
+                              </thead>
+                              <tbody class="table-border-bottom-0">
+                                {% for item in items %}
+                                  <tr>
+                                    <td scope="row">{{ forloop.counter }}</td> 
+                                    <td>E{{item.work_orders_number}}</td>
+                                    <td>AG{{item.repair_orders_number}}</td>
+                                    <td>{{item.invertory.well_information.well_number}}</td>
+                                    <td>{{item.invertory.well_information.get_contry_display}} </td>
+                                    <td>{{item.invertory.well_information.address}}</td>
+                                    <td>{{item.comment}}</td>
+                                    <td>
+                                      {% if item.work_orders_number.get_status_display == "KAPANDI" %}
+                                      <span class="badge bg-label-danger me-1">{{item.work_orders_number.get_status_display}}</span>
+                                      {% else %}
+                                      <span class="badge bg-label-success me-1">{{item.work_orders_number.get_status_display}}</span>
+                                      {% endif %}
+                                    </td>
+                                    <td>{{item.create_at}}</td>
+                                    <td>{{item.update_at}}</td>
+                                    <th>
+                                      <a type="button" href="/" title="yazdır" class="btn btn-icon btn-outline-primary">
+                                          <span class="tf-icons bx bx-printer"></span>
+                                      </a>
+                                      <a type="button" href="{% url 'update_disassembly_work' item.id %}"  class="btn btn-icon btn-outline-success">
+                                        <span class="tf-icons bx bx-edit"></span>
+                                      </a>
+                                    </th>
+                                  </tr>
+                                {% endfor %}
+                              </tbody>
+                          </table>
+                        </div>
+                    </div>
+                    </div>
+                      <script>
+                          (function(document) {
+                              'use strict';
+                  
+                              var TableFilter = (function(myArray) {
+                                  var search_input;
+                  
+                                  function _onInputSearch(e) {
+                                      search_input = e.target;
+                                      var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                                      myArray.forEach.call(tables, function(table) {
+                                          myArray.forEach.call(table.tBodies, function(tbody) {
+                                              myArray.forEach.call(tbody.rows, function(row) {
+                                                  var text_content = row.textContent.toLowerCase();
+                                                  var search_val = search_input.value.toLowerCase();
+                                                  row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                                              });
+                                          });
+                                      });
+                                  }
+                  
+                                  return {
+                                      init: function() {
+                                          var inputs = document.getElementsByClassName('search-input');
+                                          myArray.forEach.call(inputs, function(input) {
+                                              input.oninput = _onInputSearch;
+                                          });
+                                      }
+                                  };
+                              })(Array.prototype);
+                  
+                              document.addEventListener('readystatechange', function() {
+                                  if (document.readyState === 'complete') {
+                                      TableFilter.init();
+                                  }
+                              });
+                  
+                          })(document);
+                      </script>
+                </div>
+              </div>
+        </div>
+      </div>
+</div>
+{% endblock user %}
+
